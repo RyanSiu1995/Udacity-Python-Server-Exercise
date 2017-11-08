@@ -8,7 +8,7 @@ from sqlalchemy.exc import OperationalError
 
 # Basic Information of the database
 _Base = declarative_base()
-_sql_string = "postgresql://vagrant:admin@localhost/test"
+_sql_string = "postgresql://vagrant:admin@localhost/sample"
 
 
 class Catagory(_Base):
