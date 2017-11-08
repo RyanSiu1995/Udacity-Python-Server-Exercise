@@ -1,17 +1,7 @@
 #!/usr/bin/env python
 from BaseHTTPServer import HTTPServer
-from handler import WebSeverHandler
+from WebServerSetting import app
 
-
-def main():
-    try:
-        port = 8080
-        server = HTTPServer(('', port), WebSeverHandler)
-        print "Web server running on port %s" % port
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print "Stopping the server"
-        server.socket.close()
 
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=5000)

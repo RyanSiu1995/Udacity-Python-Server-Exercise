@@ -1,16 +1,41 @@
 #!/usr/bin/env python
-import sys
-from sqlaclchemy import Column, ForeignKey, Integer, String
-from sqlaclchemy.ext.declarative import declarative_base
-from sqlaclchemy import create_engine
-from sqlaclchemy.orm import relationship
-from database_table import createTableClass
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.exc import OperationalError
 
-db_string = "postgres://restaurantmenu.db"
-Base = declarative_base()
+# Basic Information of the database
+_Base = declarative_base()
+_sql_string = "postgresql://vagrant:admin@localhost/test"
 
 
-createTableClass(Base)
-engine = create_engine(db_string)
+class Catagory(_Base):
+    __tablename__ = 'catagory'
 
-Base.metadata.create_all(engine)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(80), nullable=False)
+
+
+class Items(_Base):
+    __tablename__ = 'items'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(80), nullable=False)
+    description = Column(String())
+    date = Column(DateTime())
+    catagory_id = Column(Integer, ForeignKey('catagory.id'))
+    catagory = relationship(Catagory)
+
+# Bind the Table Class to Base
+try:
+    _engine = create_engine(_sql_string)
+    _Base.metadata.create_all(_engine)
+except OperationalError:
+    raise Exception(
+        "Cannot find the database! Did you create it and provide a correct path?")
+
+_Base.metadata.bind = _engine
+_DBSession = sessionmaker(bind=_engine)
+session = _DBSession()
