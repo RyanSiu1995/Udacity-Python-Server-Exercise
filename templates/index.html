@@ -4,20 +4,42 @@
 	<title></title>
 </head>
 <body>
-	<nav>
-		
+	<nav class="top-bar">
+		<div class="top-bar-left">
+			<ul class="menu">
+				<li class="menu-text">Catalog Web Application</li>
+			</ul>
+		</div>
+		<div class="top-bar-right">
+			<ul class="menu">
+				<li><button type="button" class="button">{{ 'Login' }}</button></li>
+			</ul>
+		</div>
 	</nav>
-	<main>
-		<aside>
-			<ul>
+	<main class="main-display">
+		<aside class="main-side-bar">
+			<h4 class="column-title">Catagories</h4>
+			<ul class="vertical menu">
 				{% for item in catagory %}
-				<li>{{item.name}}</li>
+				<li><a href="{{'/catalog/items/' + item.name}}">{{item.name}}</a></li>
 				{% endfor %}
 			</ul>
 		</aside>
-		<section>
-			
+		<section class="main-content">
+			<h4 class="column-title">{{itemTitle}}</h4>
+			<ul>
+				{% for items in itemShow %}
+				<li><a href="">{{items.name}}</a></li>
+				{% endfor %}
+			</ul>
 		</section>
 	</main>
+
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/what-input.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>
 </body>
 </html>

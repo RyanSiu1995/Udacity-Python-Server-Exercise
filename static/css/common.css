@@ -1,0 +1,12 @@
+.main-display {
+  display: flex; }
+  .main-display .main-side-bar {
+    width: 20%;
+    padding: 10px; }
+  .main-display .main-content {
+    width: 80%;
+    padding: 10px; }
+  .main-display .column-title {
+    font-weight: 900; }
+
+/*# sourceMappingURL=common.css.map */
