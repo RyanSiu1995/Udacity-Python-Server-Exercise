@@ -1,12 +1,13 @@
-.main-display {
-  display: flex; }
-  .main-display .main-side-bar {
-    width: 20%;
-    padding: 10px; }
-  .main-display .main-content {
-    width: 80%;
-    padding: 10px; }
-  .main-display .column-title {
-    font-weight: 900; }
+html, body {
+  background: #e6e6e6; }
+
+.top-bar {
+  background-color: #1779ba;
+  color: white; }
+  .top-bar .menu {
+    background-color: inherit; }
+  .top-bar .button {
+    color: inherit;
+    font-weight: 600; }
 
 /*# sourceMappingURL=common.css.map */

@@ -4,6 +4,41 @@
 	<title></title>
 </head>
 <body>
+	<nav class="top-bar">
+		<div class="top-bar-left">
+			<ul class="menu">
+				<li class="menu-text">Catalog Web Application</li>
+			</ul>
+		</div>
+		<div class="top-bar-right">
+			<ul class="menu">
+				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
+			</ul>
+		</div>
+	</nav>
+	<main class="main-display">
+		<div class="main-content">
+			<h4 class="item-name">{{item.name}}</h4>
+			<section class="item-detail">
+				Catagory: {{item.catagory.name}}
+			</section>
+			<section class="item-detail">
+				Date Created: {{item.date}}
+			</section>
+			<section class="item-detail">
+				Description: <br> 
+				{{item.description}}
+			</section>
+		</div>
+	</main>
 
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/singleColumnCommon.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/viewItem.css') }}">
+	<script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>
 </body>
 </html>

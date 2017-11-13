@@ -15,15 +15,17 @@ app.secret_key = "RyanIsSoHandsome"
 def indexDisplay():
     catagory = database_session.query(Catagory).all()
     itemTitle = "Latest Items"
-    itemShow = database_session.query(Items).order_by(desc(Items.date)).limit(10).all()
-    return render_template("index.html", catagory=catagory, itemShow=itemShow, itemTitle=itemTitle)
+    itemShow = database_session.query(Items).join(
+        Items.catagory).order_by(desc(Items.date)).limit(10).all()
+    return render_template("index.html", catagory=catagory, itemShow=itemShow, itemTitle=itemTitle, home=True)
 
 
 @app.route("/catalog/items/<catagoryTarget>")
 def indexDisplayTemp(catagoryTarget):
     catagory = database_session.query(Catagory).all()
     itemTitle = catagoryTarget
-    itemShow = database_session.query(Items.name).join(Items.catagory).filter_by(name=catagoryTarget).all()
+    itemShow = database_session.query(Items).join(
+        Items.catagory).filter_by(name=catagoryTarget).all()
     return render_template("index.html", catagory=catagory, itemShow=itemShow, itemTitle=itemTitle)
 
 
@@ -51,7 +53,10 @@ def newCatagory():
 
 @app.route("/item/<int:item_id>")
 def viewItem(item_id):
-    return render_template("viewItem.html")
+    item = database_session.query(Items).filter_by(id=item_id).join(
+        Items.catagory).one()
+    print item
+    return render_template("viewItem.html", item=item)
 
 
 @app.route("/item/<int:item_id>/edit", methods=["GET", "POST"])

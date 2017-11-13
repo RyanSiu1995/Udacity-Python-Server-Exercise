@@ -1,0 +1,22 @@
+.main-display {
+  display: flex;
+  width: 90%;
+  margin: 10px auto;
+  background: white;
+  box-shadow: 2px 3px 10px 2px grey; }
+  .main-display .main-side-bar {
+    width: 20%;
+    padding: 10px; }
+  .main-display .main-content {
+    width: 80%;
+    padding: 10px; }
+    .main-display .main-content .itemInList {
+      display: inline-block;
+      padding-right: 5px; }
+    .main-display .main-content .catagoryInList {
+      color: #ccc;
+      font-style: italic; }
+  .main-display .column-title {
+    font-weight: 900; }
+
+/*# sourceMappingURL=doubleColumnCommon.css.map */

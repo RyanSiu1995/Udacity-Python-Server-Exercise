@@ -12,7 +12,7 @@
 		</div>
 		<div class="top-bar-right">
 			<ul class="menu">
-				<li><button type="button" class="button">{{ 'Login' }}</button></li>
+				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
 			</ul>
 		</div>
 	</nav>
@@ -21,15 +21,28 @@
 			<h4 class="column-title">Catagories</h4>
 			<ul class="vertical menu">
 				{% for item in catagory %}
-				<li><a href="{{'/catalog/items/' + item.name}}">{{item.name}}</a></li>
+				<li>
+					<a href="{{'/catalog/items/' + item.name}}">
+						{{item.name}}
+					</a>
+				</li>
 				{% endfor %}
 			</ul>
 		</aside>
 		<section class="main-content">
 			<h4 class="column-title">{{itemTitle}}</h4>
-			<ul>
-				{% for items in itemShow %}
-				<li><a href="">{{items.name}}</a></li>
+			<ul class="vertical menu">
+				{% for item in itemShow %}
+				<li>
+					<a class="itemInList" href="{{'/item/' + item.id|string}}">
+						{{item.name}}
+					</a>
+					{% if home %}
+					<span class="catagoryInList">
+						({{item.catagory.name}})
+					</span>
+					{% endif %}
+				</li>
 				{% endfor %}
 			</ul>
 		</section>
@@ -38,8 +51,9 @@
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-	<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/what-input.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/foundation.min.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/doubleColumnCommon.css') }}">
+	<script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>
 </body>
 </html>
