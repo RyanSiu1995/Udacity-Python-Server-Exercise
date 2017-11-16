@@ -55,29 +55,50 @@ def newCatagory():
 def viewItem(item_id):
     item = database_session.query(Items).filter_by(id=item_id).join(
         Items.catagory).one()
-    print item
-    return render_template("viewItem.html", item=item)
+    return render_template("viewItem.html", item=item, id=item_id)
 
 
 @app.route("/item/<int:item_id>/edit", methods=["GET", "POST"])
 def editItem(item_id):
     if request.method == "POST":
-        return render_template("itemForm.html")
+        return redirect("/")
     else:
-        return render_template("itemForm.html")
+        try:
+            item = database_session.query(Items).filter_by(id=item_id).join(
+                Items.catagory).one()
+            return render_template("delete.html", item=item)
+        except NoResultFound:
+            return render_template("itemForm.html")
 
 
 @app.route("/item/<int:item_id>/delete", methods=["GET", "POST"])
 def deleteItem(item_id):
     if request.method == "POST":
-        return render_template("delete.html")
+        item = database_session.query(Items).filter_by(id=item_id).join(
+            Items.catagory).one()
+        database_session.delete(item)
+        database_session.commit()
+        flash("Item \"%s\" in \"%s\" has already deleted!" %
+              (item.name, item.catagory.name))
+        return redirect("/")
     else:
-        return render_template("delete.html")
+        try:
+            item = database_session.query(Items).filter_by(id=item_id).join(
+                Items.catagory).one()
+            return render_template("delete.html", item=item, id=item_id)
+        except NoResultFound:
+            return render_template("itemForm.html")
 
 
 @app.route("/item/new", methods=["GET", "POST"])
 def newItem():
     if request.method == "POST":
-        return render_template("itemForm.html")
+        record = Items(name=request.form["name"],catagory_id=request.form["catagory_id"],description=request.form["description"])
+        database_session.add(record)
+        database_session.commit()
+        flash("Item \"%s\" has already created!" %
+              (record.name,))
+        return redirect("/")
     else:
-        return render_template("itemForm.html")
+        catagory = database_session.query(Catagory).all()
+        return render_template("itemForm.html", catagory=catagory)

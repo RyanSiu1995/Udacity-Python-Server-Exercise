@@ -4,6 +4,52 @@
 	<title></title>
 </head>
 <body>
+	<nav class="top-bar">
+		<div class="top-bar-left">
+			<ul class="menu">
+				<li class="menu-text">Catalog Web Application</li>
+			</ul>
+		</div>
+		<div class="top-bar-right">
+			<ul class="menu">
+				<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
+				<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
+				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
+			</ul>
+		</div>
+	</nav>
+	<main class="main-display">
+		<div class="main-content">
+			<form method="POST" action="{{url_for('deleteItem', item_id=id)}}">
+				<h3>Are you sure to delete the following entries?</h3>
+				<div class="item-container">
+					<div class="item-name">{{item.name}}</div>
+					<section class="item-detail">
+						Catagory: {{item.catagory.name}}
+					</section>
+					<section class="item-detail">
+						Date Created: {{item.date}}
+					</section>
+					<section class="item-detail">
+						Description: <br> 
+						{{item.description}}
+					</section>
+				</div>
+				<div class="button-container">
+					<button class="button alert" type="submit">Yes!</button>
+					<a class="button" href="{{url_for('viewItem', item_id=id)}}">Return</a>
+				</div>
+			</form>
+		</div>
+	</main>
 
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/singleColumnCommon.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/delete.css') }}">
+	<script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>
 </body>
 </html>

@@ -12,10 +12,21 @@
 		</div>
 		<div class="top-bar-right">
 			<ul class="menu">
+				<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
+				<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
 				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
 			</ul>
 		</div>
 	</nav>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="message-display main-dispaly">
+					System Message: {{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
 	<main class="main-display">
 		<aside class="main-side-bar">
 			<h4 class="column-title">Catagories</h4>

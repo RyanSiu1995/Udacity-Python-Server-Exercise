@@ -12,23 +12,30 @@
 		</div>
 		<div class="top-bar-right">
 			<ul class="menu">
+				<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
+				<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
 				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
 			</ul>
 		</div>
 	</nav>
 	<main class="main-display">
 		<div class="main-content">
-			<h4 class="item-name">{{item.name}}</h4>
-			<section class="item-detail">
-				Catagory: {{item.catagory.name}}
-			</section>
-			<section class="item-detail">
-				Date Created: {{item.date}}
-			</section>
-			<section class="item-detail">
-				Description: <br> 
-				{{item.description}}
-			</section>
+			<div class="item-container">
+				<h4 class="item-name">{{item.name}}</h4>
+				<section class="item-detail">
+					Catagory: {{item.catagory.name}}
+				</section>
+				<section class="item-detail">
+					Date Created: {{item.date}}
+				</section>
+				<section class="item-detail">
+					Description: <br> 
+					{{item.description}}
+				</section>
+			</div>
+			<div class="operation-container">
+				<a href="{{url_for('deleteItem', item_id=id)}}">Delete</a>
+			</div>
 		</div>
 	</main>
 

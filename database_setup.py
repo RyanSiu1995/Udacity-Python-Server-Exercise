@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,7 +25,7 @@ class Items(_Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     description = Column(String())
-    date = Column(DateTime())
+    date = Column(DateTime(), default=datetime.datetime.utcnow)
     catagory_id = Column(Integer, ForeignKey('catagory.id'))
     catagory = relationship(Catagory)
 

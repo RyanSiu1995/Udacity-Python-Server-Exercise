@@ -1,6 +1,14 @@
 html, body {
   background: #e6e6e6; }
 
+.message-display {
+  padding: 10px;
+  font-weight: 600;
+  width: 90%;
+  margin: 10px auto;
+  background: white;
+  box-shadow: 2px 3px 10px 2px grey; }
+
 .top-bar {
   background-color: #1779ba;
   color: white; }

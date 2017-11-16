@@ -1,0 +1,16 @@
+.item-container {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px; }
+  .item-container .item-name {
+    font-weight: 800;
+    color: #1779ba; }
+  .item-container .item-detail {
+    font-weight: 600;
+    font-family: Arial; }
+
+.button-container {
+  text-align: center;
+  margin-top: 10px; }
+
+/*# sourceMappingURL=delete.css.map */
