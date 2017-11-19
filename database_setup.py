@@ -29,13 +29,23 @@ class Items(_Base):
     catagory_id = Column(Integer, ForeignKey('catagory.id'))
     catagory = relationship(Catagory)
 
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'date_created': self.date,
+            'catagory_id': self.catagory_id
+        }
+
 # Bind the Table Class to Base
 try:
     _engine = create_engine(_sql_string)
     _Base.metadata.create_all(_engine)
 except OperationalError:
     raise Exception(
-        "Cannot find the database! Did you create it and provide a correct path?")
+        "Cannot find the database! Did you create it " +
+        "and provide a correct path?")
 
 _Base.metadata.bind = _engine
 _DBSession = sessionmaker(bind=_engine)

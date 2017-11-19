@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, render_template, request, redirect, jsonify
+from flask import url_for, flash, get_flashed_messages
 from database_setup import session as database_session, Catagory, Items
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import SQLAlchemyError
@@ -17,7 +18,9 @@ def indexDisplay():
     itemTitle = "Latest Items"
     itemShow = database_session.query(Items).join(
         Items.catagory).order_by(desc(Items.date)).limit(10).all()
-    return render_template("index.html", catagory=catagory, itemShow=itemShow, itemTitle=itemTitle, home=True)
+    return render_template(
+        "index.html", catagory=catagory, itemShow=itemShow,
+        itemTitle=itemTitle, home=True)
 
 
 @app.route("/catalog/items/<catagoryTarget>")
@@ -26,7 +29,9 @@ def indexDisplayTemp(catagoryTarget):
     itemTitle = catagoryTarget
     itemShow = database_session.query(Items).join(
         Items.catagory).filter_by(name=catagoryTarget).all()
-    return render_template("index.html", catagory=catagory, itemShow=itemShow, itemTitle=itemTitle)
+    return render_template(
+        "index.html", catagory=catagory, itemShow=itemShow,
+        itemTitle=itemTitle)
 
 
 @app.route("/newCatagory", methods=["GET", "POST"])
@@ -74,7 +79,8 @@ def editItem(item_id):
             item = database_session.query(Items).filter_by(id=item_id).join(
                 Items.catagory).one()
             catagory = database_session.query(Catagory).all()
-            return render_template("itemForm.html", item=item, catagory=catagory, editFlag=True)
+            return render_template(
+                "itemForm.html", item=item, catagory=catagory, editFlag=True)
         except NoResultFound:
             return render_template("itemForm.html")
 
@@ -111,4 +117,22 @@ def newItem():
     else:
         catagory = database_session.query(Catagory).all()
         item = None
-        return render_template("itemForm.html", catagory=catagory, item=item, editFlag=False)
+        return render_template(
+            "itemForm.html", catagory=catagory, item=item, editFlag=False)
+
+
+@app.route("/catalog.json")
+def databaseToJSON():
+    items = database_session.query(Items).join(Items.catagory).all()
+    if request.args.get('raw') == "1":
+        return jsonify(Item=[i.serialize for i in items])
+    else:
+        output = []
+        for i in items:
+            output.append({
+                "name": i.name,
+                'description': i.description,
+                'date_created': i.date,
+                'catagory': i.catagory.name
+            })
+        return jsonify(Items=output)
