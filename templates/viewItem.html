@@ -12,9 +12,13 @@
 		</div>
 		<div class="top-bar-right">
 			<ul class="menu">
-				<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
-				<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
-				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
+				{% if login %}
+					<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
+					<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
+					<li><a class="button success" href="{{url_for('fbdisconnect')}}">{{ 'Logout' }}</a></li>
+				{% else %}
+					<li><a class="button success" href="{{url_for('login')}}">{{ 'Login' }}</a></li>
+				{% endif %}
 			</ul>
 		</div>
 	</nav>
@@ -33,10 +37,12 @@
 					{{item.description}}
 				</section>
 			</div>
-			<div class="operation-container">
-				<a href="{{url_for('editItem', item_id=id)}}">Edit</a>
-				<a href="{{url_for('deleteItem', item_id=id)}}">Delete</a>
-			</div>
+			{% if login %}
+				<div class="operation-container">
+					<a href="{{url_for('editItem', item_id=id)}}">Edit</a>
+					<a href="{{url_for('deleteItem', item_id=id)}}">Delete</a>
+				</div>
+			{% endif %}
 		</div>
 	</main>
 

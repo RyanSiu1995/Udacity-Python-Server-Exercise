@@ -16,9 +16,46 @@
 			{% endif %}
 		{% endwith %}
 	</div>
-	<form action="/newCatagory" method="POST">
-		<input type="text" name="catagory">
-		<input type="submit" name="submit">
-	</form>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<nav class="top-bar">
+		<div class="top-bar-left">
+			<ul class="menu">
+				<li class="menu-text">Catalog Web Application</li>
+			</ul>
+		</div>
+		<div class="top-bar-right">
+			<ul class="menu">
+				<li><a class="button success" href="{{url_for('newItem')}}">{{ 'New Items' }}</a></li>
+				<li><a class="button success" href="{{url_for('newCatagory')}}">{{ 'New Catagory' }}</a></li>
+				<li><button type="button" class="button success">{{ 'Login' }}</button></li>
+			</ul>
+		</div>
+	</nav>
+	<main class="main-display">
+		<div class="main-content">
+			<form action="/newCatagory" method="POST">
+				<div class="input-container">
+					Catagory name: <input type="text" name="catagory">
+				</div>
+				<input class="button alert" type="submit" name="submit">
+			</form>
+		</div>
+	</main>
+
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/singleColumnCommon.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/delete.css') }}">
+	<script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>
 </body>
 </html>

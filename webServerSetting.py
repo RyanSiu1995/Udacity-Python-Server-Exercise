@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-from flask import Flask, render_template, request, redirect, jsonify
-from flask import url_for, flash, get_flashed_messages
+from flask import Flask, render_template, request, redirect, jsonify, session
+from flask import url_for, flash, get_flashed_messages, make_response
 from database_setup import session as database_session, Catagory, Items
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc
+import json
+import httplib2
+import random
+import string
 
 app = Flask("__main__")
 app.debug = True
@@ -20,7 +24,7 @@ def indexDisplay():
         Items.catagory).order_by(desc(Items.date)).limit(10).all()
     return render_template(
         "index.html", catagory=catagory, itemShow=itemShow,
-        itemTitle=itemTitle, home=True)
+        itemTitle=itemTitle, home=True, login=session['logined'])
 
 
 @app.route("/catalog/items/<catagoryTarget>")
@@ -31,11 +35,14 @@ def indexDisplayTemp(catagoryTarget):
         Items.catagory).filter_by(name=catagoryTarget).all()
     return render_template(
         "index.html", catagory=catagory, itemShow=itemShow,
-        itemTitle=itemTitle)
+        itemTitle=itemTitle, login=session['logined'])
 
 
 @app.route("/newCatagory", methods=["GET", "POST"])
 def newCatagory():
+    if not session['logined']:
+        flash('Please login first in order to add the new catagory')
+        return redirect('/')
     if request.method == "POST":
         newCataName = request.form["catagory"]
         try:
@@ -60,11 +67,15 @@ def newCatagory():
 def viewItem(item_id):
     item = database_session.query(Items).filter_by(id=item_id).join(
         Items.catagory).one()
-    return render_template("viewItem.html", item=item, id=item_id)
+    return render_template(
+        "viewItem.html", item=item, id=item_id, login=session['logined'])
 
 
 @app.route("/item/<int:item_id>/edit", methods=["GET", "POST"])
 def editItem(item_id):
+    if not session['logined']:
+        flash('Please login first in order to edit the items')
+        return redirect('/')
     if request.method == "POST":
         item_update = database_session.query(Items).filter_by(id=item_id).one()
         item_update.name = request.form["name"]
@@ -87,6 +98,9 @@ def editItem(item_id):
 
 @app.route("/item/<int:item_id>/delete", methods=["GET", "POST"])
 def deleteItem(item_id):
+    if not session['logined']:
+        flash('Please login first in order to delete the items')
+        return redirect('/')
     if request.method == "POST":
         item = database_session.query(Items).filter_by(id=item_id).join(
             Items.catagory).one()
@@ -106,6 +120,9 @@ def deleteItem(item_id):
 
 @app.route("/item/new", methods=["GET", "POST"])
 def newItem():
+    if not session['logined']:
+        flash('Please login first in order to add the new items')
+        return redirect('/')
     if request.method == "POST":
         record = Items(name=request.form["name"], catagory_id=request.form[
                        "catagory_id"], description=request.form["description"])
@@ -136,3 +153,28 @@ def databaseToJSON():
                 'catagory': i.catagory.name
             })
         return jsonify(Items=output)
+
+
+@app.route("/login")
+def login():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(16))
+    session['state'] = state
+    return render_template("login.html", state=state, login=session['logined'])
+
+
+@app.route("/fbconnect")
+def fbconnect():
+    if request.args.get('state') != session['state']:
+        response = make_response(json.dunps("Invalid Request!!!"), 401)
+        response.header['Content-type'] = 'application/json'
+        return response
+    session['logined'] = True
+    return 'success'
+
+
+@app.route("/fbdisconnect")
+def fbdisconnect():
+    session['logined'] = False
+    flash("Sucessfully logout!")
+    return redirect('/')
