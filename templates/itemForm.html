@@ -20,16 +20,16 @@
 	</nav>
 	<main class="main-display">
 		<div class="main-content">
-			<form method="POST" action="{{url_for('newItem')}}">
+			<form method="POST" {% if editFlag %} action="{{url_for('editItem', item_id=item.id)}}" {% else %} action="{{url_for('newItem')}}"  {% endif %}}>
 				<div class="input-container">
-					Name: <input type="text" name="name">
+					Name: <input {% if editFlag %} value="{{item.name}}" {% endif %} type="text" name="name">
 					Catagory: 
 					<select name="catagory_id">
 						{% for cata in catagory %}
-							<option value="{{cata.id}}">{{cata.name}}</option>
+							<option value="{{cata.id}}" {% if editFlag %}{% if cata.id == item.catagory_id %} selected {% endif %}{% endif %}>{{cata.name}}</option>
 						{% endfor %}
 					</select>
-					Description: <textarea name="description"></textarea>
+					Description: <textarea name="description">{% if editFlag %} {{item.description}} {% endif %}</textarea>
 				</div>
 				<div class="button-container">
 					<button class="button alert" type="submit">Submit</button>

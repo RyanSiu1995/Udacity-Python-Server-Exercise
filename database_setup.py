@@ -9,7 +9,7 @@ from sqlalchemy.exc import OperationalError
 
 # Basic Information of the database
 _Base = declarative_base()
-_sql_string = "postgresql://vagrant:admin@localhost/sample"
+_sql_string = "postgresql://postgres:admin@localhost/sample"
 
 
 class Catagory(_Base):

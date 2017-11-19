@@ -61,12 +61,20 @@ def viewItem(item_id):
 @app.route("/item/<int:item_id>/edit", methods=["GET", "POST"])
 def editItem(item_id):
     if request.method == "POST":
+        item_update = database_session.query(Items).filter_by(id=item_id).one()
+        item_update.name = request.form["name"]
+        item_update.catagory_id = request.form["catagory_id"]
+        item_update.description = request.form["description"]
+        database_session.add(item_update)
+        database_session.commit()
+        flash("Item \"%s\" has been updated!" % (item_update.name,))
         return redirect("/")
     else:
         try:
             item = database_session.query(Items).filter_by(id=item_id).join(
                 Items.catagory).one()
-            return render_template("delete.html", item=item)
+            catagory = database_session.query(Catagory).all()
+            return render_template("itemForm.html", item=item, catagory=catagory, editFlag=True)
         except NoResultFound:
             return render_template("itemForm.html")
 
@@ -93,7 +101,8 @@ def deleteItem(item_id):
 @app.route("/item/new", methods=["GET", "POST"])
 def newItem():
     if request.method == "POST":
-        record = Items(name=request.form["name"],catagory_id=request.form["catagory_id"],description=request.form["description"])
+        record = Items(name=request.form["name"], catagory_id=request.form[
+                       "catagory_id"], description=request.form["description"])
         database_session.add(record)
         database_session.commit()
         flash("Item \"%s\" has already created!" %
@@ -101,4 +110,5 @@ def newItem():
         return redirect("/")
     else:
         catagory = database_session.query(Catagory).all()
-        return render_template("itemForm.html", catagory=catagory)
+        item = None
+        return render_template("itemForm.html", catagory=catagory, item=item, editFlag=False)

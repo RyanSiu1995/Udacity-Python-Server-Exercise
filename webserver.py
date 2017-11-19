@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from BaseHTTPServer import HTTPServer
-from WebServerSetting import app
+from webServerSetting import app
 
 
 if __name__ == "__main__":
