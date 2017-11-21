@@ -24,12 +24,11 @@
 
 	var sendTokenToServer = function() {
 		var authResponse = FB.getAuthResponse()
-
+		console.log(authResponse);
 		FB.api('/me', function(response) {
-			console.log(response);
 			$.ajax({
 				url: '/fbconnect?state={{state}}',
-				method: 'GET',
+				method: 'POST',
 				data: authResponse['accessToken'],
 				contentType: 'application/octet-stream; charset=utf-8',
 				success: res => {
@@ -71,13 +70,15 @@
 
 	<main  class="main-display">
 		 <div class="main-content">
-		 	<fb:login-button scope="email" onlogin="sendTokenToServer()"></fb:login-button>
+		 	<h4>Please select the way to login</h4>
+		 	<div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false" scope="email" onlogin="sendTokenToServer()"></div>
 		 </div>
 	</main>
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/singleColumnCommon.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 	<script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>

@@ -22,9 +22,15 @@ def indexDisplay():
     itemTitle = "Latest Items"
     itemShow = database_session.query(Items).join(
         Items.catagory).order_by(desc(Items.date)).limit(10).all()
-    return render_template(
-        "index.html", catagory=catagory, itemShow=itemShow,
-        itemTitle=itemTitle, home=True, login=session['logined'])
+    try:
+        return render_template(
+            "index.html", catagory=catagory, itemShow=itemShow,
+            itemTitle=itemTitle, home=True, login=session['logined'])
+    except:
+        session['logined'] = False
+        return render_template(
+            "index.html", catagory=catagory, itemShow=itemShow,
+            itemTitle=itemTitle, home=True, login=session['logined'])
 
 
 @app.route("/catalog/items/<catagoryTarget>")
@@ -163,18 +169,64 @@ def login():
     return render_template("login.html", state=state, login=session['logined'])
 
 
-@app.route("/fbconnect")
+@app.route("/fbconnect", methods=['POST'])
 def fbconnect():
     if request.args.get('state') != session['state']:
         response = make_response(json.dunps("Invalid Request!!!"), 401)
         response.header['Content-type'] = 'application/json'
         return response
     session['logined'] = True
+
+    # Get the server token from facebook
+    clientToken = request.data
+    file = open('secret.json', 'r')
+    fbsecret = json.loads(file.read())
+    url = 'https://graph.facebook.com/oauth/access_token?' \
+        'grant_type=fb_exchange_token&client_id=%s&client_secret=%s' \
+        '&fb_exchange_token=%s' % (
+            fbsecret['app_id'], fbsecret['secret'], clientToken)
+    http = httplib2.Http()
+    result = http.request(url, 'GET')[1]
+    serverToken = result.split(',')[0].split(':')[1].replace('"', '')
+    session['token'] = serverToken
+
+    # Get the user information
+    userinfo_url = 'https://graph.facebook.com/v2.8/me'\
+        '?access_token=%s&fields=name,id,email' % serverToken
+    http = httplib2.Http()
+    userinfo = json.loads(http.request(userinfo_url, 'GET')[1])
+    print userinfo
+    session['provider'] = 'facebook'
+    session['user'] = userinfo["name"]
+    session['email'] = userinfo["email"]
+    session['facebook_id'] = userinfo["id"]
+
+    flash('Login Successfully via %s as %s.' % (
+        session['provider'], session['user']))
+
     return 'success'
 
 
 @app.route("/fbdisconnect")
 def fbdisconnect():
     session['logined'] = False
-    flash("Sucessfully logout!")
-    return redirect('/')
+    try:
+        url = 'https://graph.facebook.com/%s/' \
+            'permissions?access_token=%s' % (
+                session['facebook_id'], session['token'])
+    except:
+        flash("Session has already ended in server")
+        return redirect('/')
+    http = httplib2.Http()
+    http.request(url, 'DELETE')
+    try:
+        del session['token']
+        del session['provider']
+        del session['user']
+        del session['email']
+        del session['facebook_id']
+        flash("Sucessfully logout!")
+        return redirect('/')
+    except:
+        flash("Session has already ended in server")
+        return redirect('/')
