@@ -49,4 +49,5 @@ except OperationalError:
 
 _Base.metadata.bind = _engine
 _DBSession = sessionmaker(bind=_engine)
+# Set the output variables in this module
 session = _DBSession()
