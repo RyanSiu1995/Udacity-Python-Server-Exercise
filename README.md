@@ -8,20 +8,23 @@ protect the data inside the server.
 	1. Flask
 	2. SQLAlchemy
 	3. BaseHTTPServer
-2. PostgreSQL 9.6.6
+2. SQLite
 ## Installation
 Step 1 - Install the required python libraries
 `bash
 pip install flask sqlalchemy BaseHTTPServer
 `
 
-Step 2 - Set up the database
+~~Step 2 - Set up the database
 Please create an admin account with password. The default acoount is
 postgres with password admin. Then, you should create the database called
 sample so that the database_setup.py can correctly point to your local 
 database.
 If you want to customize the account and database, you will have to change
-the value of _sql_string inside database_setup.py.
+the value of _sql_string inside database_setup.py.~~
+Step 2 - Database Set up
+The database file has already attached in the root directory called data.db.
+The database_setup.py will read it automatically.
 
 Step 3 - Launch the server
 You can then launch the server by the following script.

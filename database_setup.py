@@ -9,7 +9,7 @@ from sqlalchemy.exc import OperationalError
 
 # Basic Information of the database
 _Base = declarative_base()
-_sql_string = "postgresql://postgres:admin@localhost/sample"
+_sql_string = "sqlite:///data.db"
 
 
 class Catagory(_Base):
