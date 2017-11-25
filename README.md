@@ -14,6 +14,7 @@ Step 1 - Install the required python libraries
 `bash
 pip install flask sqlalchemy BaseHTTPServer
 `
+
 Step 2 - Set up the database
 Please create an admin account with password. The default acoount is
 postgres with password admin. Then, you should create the database called
@@ -33,6 +34,7 @@ The website provides the users with CRUD operations in the database after
 logging in. Please use the facebook account to login through the button in 
 top right hand corner. After logging in to the system, you can enjoy the 
 CRUD operations with the item catalog.
+
 Please note that you can either create the catalogs or items in the website.
 You should create at least one catalogs first in order to organize the items
 well.  
