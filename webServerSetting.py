@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, request, redirect, jsonify, session
 from flask import url_for, flash, get_flashed_messages, make_response
-from database_setup import session as database_session, Catagory, Items
+from functools import wraps
+from database_setup import session as database_session, Catagory, Items, User
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc
@@ -14,6 +15,22 @@ import string
 app = Flask("__main__")
 app.debug = True
 app.secret_key = "RyanIsSoHandsome"
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            if session['logined']:
+                return f(*args, **kwargs)
+            else:
+                flash(
+                    'Please login first in order to access the restricted area')
+                return redirect('/')
+        except:
+            flash('Please login first in order to access the restricted area')
+            return redirect('/')
+    return decorated_function
 
 
 @app.route("/")
@@ -52,15 +69,8 @@ def indexDisplayTemp(catagoryTarget):
 
 
 @app.route("/newCatagory", methods=["GET", "POST"])
+@login_required
 def newCatagory():
-    # Set up the guard to the restricted page
-    try:
-        if not session['logined']:
-            flash('Please login first in order to add the new catagory')
-            return redirect('/')
-    except:
-        flash('Please login first in order to add the new catagory')
-        return redirect('/')
     # If the method is POST, do the following
     if request.method == "POST":
         newCataName = request.form["catagory"]
@@ -91,27 +101,27 @@ def viewItem(item_id):
         Items.catagory).one()
     try:
         return render_template(
-            "viewItem.html", item=item, id=item_id, login=session['logined'])
+            "viewItem.html", item=item, id=item_id,
+            login=session['logined'], user_id=session['user_id'])
     except:
         # Prevent the session variable from unsetting
         session['logined'] = False
+        session['user_id'] = -1
         return render_template(
-            "viewItem.html", item=item, id=item_id, login=session['logined'])
+            "viewItem.html", item=item, id=item_id,
+            login=session['logined'], user_id=session['user_id'])
 
 
 @app.route("/item/<int:item_id>/edit", methods=["GET", "POST"])
+@login_required
 def editItem(item_id):
-    # Set up the guard to the restricted page
-    try:
-        if not session['logined']:
-            flash('Please login first in order to edit the items')
-            return redirect('/')
-    except:
-        flash('Please login first in order to edit the items')
-        return redirect('/')
     # If the method is POST, connect to the database and update it
     if request.method == "POST":
         item_update = database_session.query(Items).filter_by(id=item_id).one()
+        # Check if the editing user is the user creating this item
+        if item_update.user_id != session['user_id']:
+            flash('You have no permession to edit item %s' % (item.name,))
+            return redirect('/')
         item_update.name = request.form["name"]
         item_update.catagory_id = request.form["catagory_id"]
         item_update.description = request.form["description"]
@@ -138,19 +148,15 @@ def editItem(item_id):
 
 
 @app.route("/item/<int:item_id>/delete", methods=["GET", "POST"])
+@login_required
 def deleteItem(item_id):
-    # Set up the guard to the restricted page
-    try:
-        if not session['logined']:
-            flash('Please login first in order to delete the items')
-            return redirect('/')
-    except:
-        flash('Please login first in order to delete the items')
-        return redirect('/')
     # If the request is POST, try to delete the item
     if request.method == "POST":
         item = database_session.query(Items).filter_by(id=item_id).join(
             Items.catagory).one()
+        if item.user_id != session['user_id']:
+            flash('You have no permission to delete item %s' % (item.name,))
+            redirect('/')
         database_session.delete(item)
         database_session.commit()
         flash("Item \"%s\" has already deleted!" %
@@ -168,19 +174,15 @@ def deleteItem(item_id):
 
 
 @app.route("/item/new", methods=["GET", "POST"])
+@login_required
 def newItem():
-    # Set up the guard to the restricted page
-    try:
-        if not session['logined']:
-            flash('Please login first in order to add the new items')
-            return redirect('/')
-    except:
-        flash('Please login first in order to add the new items')
-        return redirect('/')
     # If the method is POST, try to add the new record
     if request.method == "POST":
-        record = Items(name=request.form["name"], catagory_id=request.form[
-                       "catagory_id"], description=request.form["description"])
+        record = Items(
+            name=request.form["name"],
+            catagory_id=request.form["catagory_id"],
+            description=request.form["description"],
+            user_id=session['user_id'])
         # Try to add the new items
         try:
             database_session.add(record)
@@ -214,11 +216,26 @@ def databaseToJSON():
         for i in items:
             output.append({
                 "name": i.name,
-                'description': i.description,
+                'description': i.description.encode('utf-8'),
                 'date_created': i.date,
                 'catagory': i.catagory.name
             })
         return jsonify(Items=output)
+
+
+@app.route("/item/<int:item_id>.json")
+def JSONItem(item_id):
+    # Query the details of the items and render
+    item = database_session.query(Items).filter_by(id=item_id).join(
+        Items.catagory).one()
+    output = [{
+        "name": item.name,
+        'description': item.description,
+        'date_created': item.date,
+        'catagory': item.catagory.name
+    }]
+    print item.description
+    return jsonify(Items=output)
 
 
 @app.route("/login")
@@ -239,7 +256,7 @@ def login():
 
 @app.route("/fbconnect", methods=['POST'])
 def fbconnect():
-    # If the state variable from request is not the same as the one 
+    # If the state variable from request is not the same as the one
     # in session,
     # Reject the request
     if request.args.get('state') != session['state']:
@@ -271,6 +288,27 @@ def fbconnect():
     session['user'] = userinfo["name"]
     session['email'] = userinfo["email"]
     session['facebook_id'] = userinfo["id"]
+
+    # Insert the user into the database
+    try:
+        item = database_session.query(
+            User).filter_by(
+            provider=session['provider'],
+            provider_id=session['facebook_id']).one()
+        session['user_id'] = item.id
+    except NoResultFound:
+            # Try to add the new catagory
+        newUser = User(
+            provider=session['provider'],
+            provider_id=session['facebook_id'])
+        try:
+            database_session.add(newUser)
+            database_session.flush()
+            database_session.commit()
+            session['user_id'] = newUser.id
+        except SQLAlchemyError:
+            flash("The system cannot add the user")
+            return redirect("/")
 
     # Flash the system message
     flash('Login Successfully via %s as %s.' % (

@@ -42,7 +42,11 @@ Please note that you can either create the catalogs or items in the website.
 You should create at least one catalogs first in order to organize the items
 well.  
 ## API Provided
-The system provides the user with URL /catalog.json. This API will server the users
-with the JSON object of the items with joining the catalog name. The URL accepts the
-query parameter raw. If raw is set to be 1, you will get the id of the 
-catalog instead of the name of the catalog.
+### /catalog.json
+This API will server the users with the JSON object of the items with joining 
+the catalog name. The URL accepts the query parameter raw. If raw is set to be 
+1, you will get the id of the catalog instead of the name of the catalog.
+### /item/:id.json
+This API accepts the items id to show the details of arbitary item in the catalog 
+with JSON format. You can get the id from catalog.json or the URL of viewing page 
+for the target in the web interface. 

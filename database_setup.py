@@ -12,6 +12,14 @@ _Base = declarative_base()
 _sql_string = "sqlite:///data.db"
 
 
+class User(_Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    provider = Column(String(80), nullable=False)
+    provider_id = Column(String(80), nullable=False)
+
+
 class Catagory(_Base):
     __tablename__ = 'catagory'
 
@@ -26,8 +34,11 @@ class Items(_Base):
     name = Column(String(80), nullable=False)
     description = Column(String())
     date = Column(DateTime(), default=datetime.datetime.utcnow)
-    catagory_id = Column(Integer, ForeignKey('catagory.id'))
+    catagory_id = Column(Integer, ForeignKey(
+        'catagory.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
     catagory = relationship(Catagory)
+    user = relationship(User)
 
     @property
     def serialize(self):

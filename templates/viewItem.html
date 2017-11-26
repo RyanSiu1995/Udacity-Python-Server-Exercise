@@ -38,10 +38,12 @@
 				</section>
 			</div>
 			{% if login %}
-				<div class="operation-container">
-					<a href="{{url_for('editItem', item_id=id)}}">Edit</a>
-					<a href="{{url_for('deleteItem', item_id=id)}}">Delete</a>
-				</div>
+				{% if item.user_id == user_id %}
+					<div class="operation-container">
+						<a href="{{url_for('editItem', item_id=id)}}">Edit</a>
+						<a href="{{url_for('deleteItem', item_id=id)}}">Delete</a>
+					</div>
+				{% endif %}
 			{% endif %}
 		</div>
 	</main>
